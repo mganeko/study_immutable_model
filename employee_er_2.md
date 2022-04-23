@@ -121,8 +121,8 @@ Employee {
   string name
   date birthday
   date join_date
-  integer maindepartment_id
-  string mainPosition
+  integer main_department_id
+  string main_position
 }
 
 Assignment {
