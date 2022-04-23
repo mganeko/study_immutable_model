@@ -48,6 +48,8 @@ CREATE TABLE Employee (
 
 SELECT * from Employee;
 
+CREATE INDEX department_ind ON Employee(main_department_id);
+
 
 /* --------------
 Assignment {
