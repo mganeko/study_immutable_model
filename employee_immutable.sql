@@ -55,13 +55,17 @@ SELECT * from Employee;
 CREATE INDEX department_ind ON Employee(main_department_id);
 
 INSERT INTO Employee (employee_number, name, birthday, join_date, main_department_id, main_position)
- VALUES ("0001", "山田太郎", "1990-05-10", "2020-04-01", 1, "課長");
+ -- VALUES ("0001", "山田太郎", "1990-05-10", "2020-04-01", 1, "課長");
+ VALUES ("0001", "山田太郎", "1970-05-10", "1995-10-01", 1, "課長");
 
 INSERT INTO Employee (employee_number, name, birthday, join_date, main_department_id, main_position)
- VALUES ("0021", "鈴木一美", "2000-08-25", "2022-04-01", 2, NULL);
+ -- VALUES ("0021", "鈴木一美", "2000-08-25", "2022-04-01", 2, NULL);
+ VALUES ("0021", "鈴木一美", "2000-08-25", "2022-04-01", 2, "メンバー");
 
 
+UPDATE Employee SET main_position = "メンバー" WHERE employee_number = "0021";
 
+UPDATE Employee SET birthday = "1970-05-10", join_date = "1995-10-01" WHERE employee_number = "0001";
 
 
 
@@ -88,8 +92,6 @@ CREATE TABLE Assignment (
 
 SELECT * from Assignment;
 
-INSERT INTO Assignment (department_id, employee_number, position, assign_date)
- VALUES (2, "0021", "メンバー", "2022-04-01");
 
 /* --------------
 Leave {
@@ -115,10 +117,77 @@ CREATE TABLE Leave (
 SELECT * from Leave;
 
 
-/* 山田太郎 0001
+/* ---------
+山田太郎 0001
 経歴
 
+"1995-10-01",  "営業部":3, "メンバー"
+"1998-04-01",  "開発部":4, "リーダー", 兼務
 
+"2015-04-01",  "総務部":1, "副課長"
+"2020-04-01",  "人事":2, "メンバー", 兼務
 
+"2021-04-01",  "総務":1, "課長",
+"2022-04-01",  "人事":2, "メンバー" の兼務解除
 
+--> 2022-04-01,  "総務":1, "課長",
 */
+
+-- "1995-10-01",  "営業部", "メンバー"
+INSERT INTO Assignment (department_id, employee_number, position, assign_date)
+ VALUES (3, "0001", "メンバー", "1995-10-01");
+
+-- "1998-04-01",  "開発部":4, "リーダー", 兼務
+INSERT INTO Assignment (department_id, employee_number, position, assign_date)
+ VALUES (4, "0001", "リーダー", "1998-04-01");
+
+
+-- "2015-04-01",  "総務部":1, "副課長"
+INSERT INTO Leave (department_id, employee_number, position, leave_date)
+ VALUES (3, "0001", "メンバー", "2015-04-01");
+
+INSERT INTO Leave (department_id, employee_number, position, leave_date)
+ VALUES (4, "0001", "リーダー", "2015-04-01");
+
+INSERT INTO Assignment (department_id, employee_number, position, assign_date)
+ VALUES (1, "0001", "副課長", "2015-04-01");
+
+
+-- "2020-04-01",  "人事":2, "メンバー", 兼務
+INSERT INTO Assignment (department_id, employee_number, position, assign_date)
+ VALUES (2, "0001", "メンバー", "2020-04-01");
+
+
+-- "2021-04-01",  "総務":1, "副課長" --> "課長",
+INSERT INTO Leave (department_id, employee_number, position, leave_date)
+ VALUES (1, "0001", "副課長", "2021-04-01");
+INSERT INTO Assignment (department_id, employee_number, position, assign_date)
+ VALUES (1, "0001", "課長", "2021-04-01");
+
+-- "2022-04-01",  "人事":2, "メンバー" の兼務解除
+INSERT INTO Leave (department_id, employee_number, position, leave_date)
+ VALUES (2, "0001", "メンバー", "2022-04-01");
+
+/* ------------
+  鈴木一美 0021
+  "2022-04-01", "人事部":2, "メンバー"
+*/
+
+INSERT INTO Assignment (department_id, employee_number, position, assign_date)
+ VALUES (2, "0021", "メンバー", "2022-04-01");
+
+
+-- ----------
+
+/* --- Employee & Department -- */
+SELECT * from Employee INNER JOIN Department ON Employee.main_department_id = Department.id;
+
+SELECT e.employee_number, e.name, d.name AS department_name, e.main_position
+ from Employee AS e INNER JOIN Department AS d ON e.main_department_id = d.id;
+
+/* --- Assignment & Leave --- */
+SELECT department_id, employee_number, position, leave_date AS move_date, "離任" as event_name  FROM Leave
+ UNION
+SELECT department_id, employee_number, position, assign_date AS move_date, "配属" as event_name FROM Assignment
+ORDER BY employee_number, move_date;
+
