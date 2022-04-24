@@ -46,9 +46,23 @@ CREATE TABLE Employee (
   -- FOREIGN KEY (main_department_id) REFERENCES Department(id)
 );
 
+-- オンラインで FOREIGN KEY はサポートされない. COPYならOKかも？
+-- ALTER TABLE tbl_name DROP PRIMARY KEY, ALGORITHM=COPY; -- ??
+
+
 SELECT * from Employee;
 
 CREATE INDEX department_ind ON Employee(main_department_id);
+
+INSERT INTO Employee (employee_number, name, birthday, join_date, main_department_id, main_position)
+ VALUES ("0001", "山田太郎", "1990-05-10", "2020-04-01", 1, "課長");
+
+INSERT INTO Employee (employee_number, name, birthday, join_date, main_department_id, main_position)
+ VALUES ("0021", "鈴木一美", "2000-08-25", "2022-04-01", 2, NULL);
+
+
+
+
 
 
 /* --------------
@@ -74,6 +88,9 @@ CREATE TABLE Assignment (
 
 SELECT * from Assignment;
 
+INSERT INTO Assignment (department_id, employee_number, position, assign_date)
+ VALUES (2, "0021", "メンバー", "2022-04-01");
+
 /* --------------
 Leave {
   integer department_id
@@ -96,3 +113,12 @@ CREATE TABLE Leave (
 );
 
 SELECT * from Leave;
+
+
+/* 山田太郎 0001
+経歴
+
+
+
+
+*/
