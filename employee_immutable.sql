@@ -316,3 +316,19 @@ SELECT asgn.employee_number, emp.name, department_id, dpt.name, position
  FROM past_assignment_202005 AS asgn
   INNER JOIN Employee AS emp ON asgn.employee_number = emp.employee_number
   INNER JOIN Department AS dpt ON asgn.department_id = dpt.id;
+
+
+/* --- WITH を使う ERROR？ ---*/
+
+
+WITH assign
+AS
+  SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary
+   FROM assign_levae
+    WHERE move_date <= "2020-05-01"
+   GROUP BY employee_number, department_id, position
+   HAVING assign_summary > 0
+SELECT asgn.employee_number, emp.name, department_id, dpt.name, position
+ FROM assign AS asgn
+  INNER JOIN Employee AS emp ON asgn.employee_number = emp.employee_number
+  INNER JOIN Department AS dpt ON asgn.department_id = dpt.id;
