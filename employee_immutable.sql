@@ -267,4 +267,52 @@ SELECT employee_number, department_id, position, SUM(assign_value) AS assign_sum
  GROUP BY employee_number, department_id, position
   HAVING assign_summary > 0
  ORDER BY employee_number;
- 
+
+
+ /* --- 社員一覧の取得 ----*/
+
+CREATE VIEW current_assignment (employee_number, department_id, position, assign_summary)
+AS
+  SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary
+   FROM assign_levae
+    WHERE move_date <= CURRENT_DATE()
+   GROUP BY employee_number, department_id, position
+   HAVING assign_summary > 0;
+
+SELECT * from current_assignment ORDER BY employee_number;
+
+
+SELECT employee_number, department_id, Department.name, position
+ FROM current_assignment INNER JOIN Department ON current_assignment.department_id = Department.id;
+
+SELECT current_assignment.employee_number, Employee.name, department_id, Department.name, position
+ FROM current_assignment
+  INNER JOIN Employee ON current_assignment.employee_number = Employee.employee_number
+  INNER JOIN Department ON current_assignment.department_id = Department.id;
+
+SELECT asgn.employee_number, emp.name, department_id, dpt.name, position
+ FROM current_assignment AS asgn
+  INNER JOIN Employee AS emp ON asgn.employee_number = emp.employee_number
+  INNER JOIN Department AS dpt ON asgn.department_id = dpt.id;
+
+-- 2020/05/01 --
+CREATE VIEW past_assignment_202005 (employee_number, department_id, position, assign_summary)
+AS
+  SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary
+   FROM assign_levae
+    WHERE move_date <= "2020-05-01"
+   GROUP BY employee_number, department_id, position
+   HAVING assign_summary > 0;
+   
+SELECT * from past_assignment_202005 ORDER BY employee_number;
+
+
+SELECT past_assignment_202005.employee_number, Employee.name, department_id, Department.name, position
+ FROM past_assignment_202005
+  INNER JOIN Employee ON past_assignment_202005.employee_number = Employee.employee_number
+  INNER JOIN Department ON past_assignment_202005.department_id = Department.id;
+
+SELECT asgn.employee_number, emp.name, department_id, dpt.name, position
+ FROM past_assignment_202005 AS asgn
+  INNER JOIN Employee AS emp ON asgn.employee_number = emp.employee_number
+  INNER JOIN Department AS dpt ON asgn.department_id = dpt.id;
