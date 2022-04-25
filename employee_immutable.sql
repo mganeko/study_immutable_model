@@ -191,3 +191,80 @@ SELECT department_id, employee_number, position, leave_date AS move_date, "離�
 SELECT department_id, employee_number, position, assign_date AS move_date, "配属" as event_name FROM Assignment
 ORDER BY employee_number, move_date;
 
+
+/* --- Assignment & Leave with Departmet --- */
+SELECT employee_number,  department_id, Department.name, position, leave_date AS move_date, "a:離任" AS event_name
+  FROM Leave INNER JOIN Department ON Leave.department_id = Department.id
+ UNION
+SELECT employee_number,  department_id, Department.name, position, assign_date AS move_date, "b:配属" AS event_name
+ FROM Assignment INNER JOIN Department ON Assignment.department_id = Department.id
+ORDER BY employee_number, move_date, event_name;
+
+/*--- current assignement ----*/
+SELECT employee_number,  department_id, position, leave_date AS move_date,
+  "a:離任" AS event_name, -1 AS assign_value FROM Leave
+ UNION
+SELECT employee_number,  department_id, position, assign_date AS move_date,
+  "b:配属" AS event_name, 1 AS assign_value FROM Assignment;
+
+--  VIEW --
+CREATE VIEW Assign_Levae (employee_number,  department_id, position, move_date, event_name, assign_value)
+AS
+ SELECT employee_number,  department_id, position, leave_date AS move_date,
+   "a:離任" AS event_name, -1 AS assign_value FROM Leave
+  UNION
+ SELECT employee_number,  department_id, position, assign_date AS move_date,
+   "b:配属" AS event_name, 1 AS assign_value FROM Assignment;
+
+-- summary --
+SELECT employee_number, department_id, position, SUM(assign_value), count(*)
+ FROM assign_levae
+ GROUP BY employee_number, department_id, position;
+
+ -- OK --
+SELECT * FROM assign_levae 
+  WHERE move_date < "2022-05-01";
+
+-- OK --
+SELECT employee_number, department_id, position, SUM(assign_value), count(*)
+ FROM assign_levae
+   WHERE move_date < "2020-05-01"
+ GROUP BY employee_number, department_id, position;
+
+SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary, count(*)
+ FROM assign_levae
+   WHERE move_date < "2020-05-01" AND assign_summary > 0
+ GROUP BY employee_number, department_id, position;
+
+/* --- 最新の現在状況 ----*/
+SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary, count(*)
+ FROM assign_levae
+   WHERE move_date < "2020-05-01"
+ GROUP BY employee_number, department_id, position
+  HAVING assign_summary > 0;
+
+SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary, count(*)
+ FROM assign_levae
+   WHERE move_date < "2022-05-01"
+ GROUP BY employee_number, department_id, position
+  HAVING assign_summary > 0;
+
+SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary, count(*)
+ FROM assign_levae
+   WHERE move_date <= "2022-04-01"
+ GROUP BY employee_number, department_id, position
+  HAVING assign_summary > 0;
+
+SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary, count(*)
+ FROM assign_levae
+   WHERE move_date <= CURRENT_DATE()
+ GROUP BY employee_number, department_id, position
+  HAVING assign_summary > 0;
+
+SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary, count(*)
+ FROM assign_levae
+   WHERE move_date <= CURRENT_DATE()
+ GROUP BY employee_number, department_id, position
+  HAVING assign_summary > 0
+ ORDER BY employee_number;
+ 
