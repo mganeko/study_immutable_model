@@ -21,6 +21,12 @@ INSERT INTO Department (id, name) VALUES (2, "人事部");
 INSERT INTO Department (id, name) VALUES (3, "営業部");
 INSERT INTO Department (id, name) VALUES (4, "開発部");
 
+/* -- VALUES は、シングルクォートで囲む必要あり？？ ---- */
+INSERT INTO Department (id, name) VALUES (1, '総務部');
+INSERT INTO Department (id, name) VALUES (2, '人事部');
+INSERT INTO Department (id, name) VALUES (3, '営業部');
+INSERT INTO Department (id, name) VALUES (4, '開発部');
+
 
 /* ------------------------------------------
 Employee {
