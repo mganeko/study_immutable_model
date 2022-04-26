@@ -369,3 +369,6 @@ SELECT asgn.employee_number, emp.name, department_id, dpt.name, position
 TRY WITH
 
 ----*/
+
+WITH emp AS (SELECT employee_number, name FROM Employee)
+SELECT * from emp;
