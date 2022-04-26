@@ -92,6 +92,36 @@ CREATE TABLE Assignment (
 
 SELECT * from Assignment;
 
+-- FOREIGN KEY 追加 --
+ALTER TABLE Assignment ADD CONSTRAINT department_exist FOREIGN KEY department_ind (department_id) 
+ REFERENCES Department(id) ALGORITHM=COPY;
+
+-- ALTER TABLE tbl1 ADD CONSTRAINT fk_name FOREIGN KEY index (col1) REFERENCES tbl2(col2) referential_actions;
+
+-- try ---
+
+CREATE TABLE try_country (
+  id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE try_person (
+  id INT NOT NULL,
+  country_id INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  PRIMARY KEY(id),
+  KEY country_idx (country_id),
+  CONSTRAINT person_country_fk FOREIGN KEY (country_id) REFERENCES try_country(id) ON DELETE NO ACTION
+);
+
+/*
+-- NG ---
+
+foreign key constraints are not allowed,
+ see https://vitess.io/blog/2021-06-15-online-ddl-why-no-fk/
+
+*/
 
 /* --------------
 Leave {
@@ -332,3 +362,10 @@ SELECT asgn.employee_number, emp.name, department_id, dpt.name, position
  FROM assign AS asgn
   INNER JOIN Employee AS emp ON asgn.employee_number = emp.employee_number
   INNER JOIN Department AS dpt ON asgn.department_id = dpt.id;
+
+-- ------------
+
+/* ----
+TRY WITH
+
+----*/
