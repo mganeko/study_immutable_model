@@ -82,18 +82,17 @@ INSERT INTO Employee (employee_number, name, birthday, join_date, main_departmen
  VALUES ("0021", "鈴木一美", "2000-08-25", "2022-04-01", 2, "メンバー");
  -- VALUES ("0021", "鈴木一美", "2000-08-25", "2022-04-01", 2, NULL);
 
+UPDATE Employee SET main_position = "メンバー" WHERE employee_number = "0021";
+
+UPDATE Employee SET birthday = "1970-05-10", join_date = "1995-10-01" WHERE employee_number = "0001";
+
+
 --- for MySQL8 on DO --
 INSERT INTO Employee (employee_number, name, birthday, join_date, main_department_id, main_position)
  VALUES ('0001', '山田太郎', '1970-05-10', '1995-10-01', 1, '課長');
 
 INSERT INTO Employee (employee_number, name, birthday, join_date, main_department_id, main_position)
  VALUES ('0021', '鈴木一美', '2000-08-25', '2022-04-01', 2, 'メンバー');
-
-UPDATE Employee SET main_position = "メンバー" WHERE employee_number = "0021";
-
-UPDATE Employee SET birthday = "1970-05-10", join_date = "1995-10-01" WHERE employee_number = "0001";
-
-
 
 /* --------------
 Assignment {
