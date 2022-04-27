@@ -55,19 +55,39 @@ CREATE TABLE Employee (
 -- オンラインで FOREIGN KEY はサポートされない. COPYならOKかも？
 -- ALTER TABLE tbl_name DROP PRIMARY KEY, ALGORITHM=COPY; -- ??
 
+--- for MySQL8 on DO --
+CREATE TABLE Employee (
+  employee_number VARCHAR(16) NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  birthday DATE,
+  join_date DATE NOT NULL,
+  main_department_id INTEGER NOT NULL,
+  main_position VARCHAR(16),
+  PRIMARY KEY (employee_number),
+
+  INDEX department_ind (main_department_id),
+  FOREIGN KEY (main_department_id) REFERENCES Department(id)
+);
+
 
 SELECT * from Employee;
 
 CREATE INDEX department_ind ON Employee(main_department_id);
 
 INSERT INTO Employee (employee_number, name, birthday, join_date, main_department_id, main_position)
- -- VALUES ("0001", "山田太郎", "1990-05-10", "2020-04-01", 1, "課長");
  VALUES ("0001", "山田太郎", "1970-05-10", "1995-10-01", 1, "課長");
+ -- VALUES ("0001", "山田太郎", "1990-05-10", "2020-04-01", 1, "課長");
 
 INSERT INTO Employee (employee_number, name, birthday, join_date, main_department_id, main_position)
- -- VALUES ("0021", "鈴木一美", "2000-08-25", "2022-04-01", 2, NULL);
  VALUES ("0021", "鈴木一美", "2000-08-25", "2022-04-01", 2, "メンバー");
+ -- VALUES ("0021", "鈴木一美", "2000-08-25", "2022-04-01", 2, NULL);
 
+--- for MySQL8 on DO --
+INSERT INTO Employee (employee_number, name, birthday, join_date, main_department_id, main_position)
+ VALUES ('0001', '山田太郎', '1970-05-10', '1995-10-01', 1, '課長');
+
+INSERT INTO Employee (employee_number, name, birthday, join_date, main_department_id, main_position)
+ VALUES ('0021', '鈴木一美', '2000-08-25', '2022-04-01', 2, 'メンバー');
 
 UPDATE Employee SET main_position = "メンバー" WHERE employee_number = "0021";
 
@@ -94,6 +114,20 @@ CREATE TABLE Assignment (
   INDEX department_ind (department_id),
   INDEX employee_ind (employee_number)
   -- , FOREIGN KEY (department_id) REFERENCES Department(id)
+);
+
+-- MySQL 8 on DO
+CREATE TABLE Assignment (
+  department_id INTEGER NOT NULL,
+  employee_number VARCHAR(16) NOT NULL,
+  position VARCHAR(16) NOT NULL,
+  assign_date DATE NOT NULL,
+
+  PRIMARY KEY(department_id, employee_number, position, assign_date),
+
+  INDEX department_ind (department_id),
+  INDEX employee_ind (employee_number)
+  , FOREIGN KEY (department_id) REFERENCES Department(id)
 );
 
 SELECT * from Assignment;
@@ -151,6 +185,21 @@ CREATE TABLE Leave (
 );
 
 SELECT * from Leave;
+
+-- MySQL 8 on DO
+--  Leave はキーワードらしく、テーブル名に使えない
+CREATE TABLE Leave_event (
+  department_id INTEGER NOT NULL,
+  employee_number VARCHAR(16) NOT NULL,
+  position VARCHAR(16) NOT NULL,
+  leave_date DATE NOT NULL,
+
+  PRIMARY KEY(department_id, employee_number, position, leave_date),
+
+  INDEX department_ind (department_id),
+  INDEX employee_ind (employee_number)
+  , FOREIGN KEY (department_id) REFERENCES Department(id)
+);
 
 
 /* ---------
@@ -213,6 +262,45 @@ INSERT INTO Assignment (department_id, employee_number, position, assign_date)
  VALUES (2, "0021", "メンバー", "2022-04-01");
 
 
+-- MySQL 8 on DO
+
+INSERT INTO Assignment (department_id, employee_number, position, assign_date)
+ VALUES (2, '0021', 'メンバー', '2022-04-01');
+
+--
+
+INSERT INTO Assignment (department_id, employee_number, position, assign_date)
+ VALUES (3, '0001', 'メンバー', '1995-10-01');
+
+INSERT INTO Assignment (department_id, employee_number, position, assign_date)
+ VALUES (4, '0001', 'リーダー', '1998-04-01');
+
+
+-- "2015-04-01",  "総務部":1, "副課長"
+INSERT INTO Leave_event (department_id, employee_number, position, leave_date)
+ VALUES (3, '0001', 'メンバー', '2015-04-01');
+
+INSERT INTO Leave_event (department_id, employee_number, position, leave_date)
+ VALUES (4, '0001', 'リーダー', '2015-04-01');
+
+INSERT INTO Assignment (department_id, employee_number, position, assign_date)
+ VALUES (1, '0001', '副課長', '2015-04-01');
+
+
+-- "2020-04-01",  "人事":2, "メンバー", 兼務
+INSERT INTO Assignment (department_id, employee_number, position, assign_date)
+ VALUES (2, '0001', 'メンバー', '2020-04-01');
+
+
+-- "2021-04-01",  "総務":1, "副課長" --> "課長",
+INSERT INTO Leave_event (department_id, employee_number, position, leave_date)
+ VALUES (1, '0001', '副課長', '2021-04-01');
+INSERT INTO Assignment (department_id, employee_number, position, assign_date)
+ VALUES (1, '0001', '課長', '2021-04-01');
+
+-- "2022-04-01",  "人事":2, "メンバー" の兼務解除
+INSERT INTO Leave_event (department_id, employee_number, position, leave_date)
+ VALUES (2, '0001', 'メンバー', '2022-04-01');
 -- ----------
 
 /* --- Employee & Department -- */
