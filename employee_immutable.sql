@@ -324,6 +324,15 @@ SELECT employee_number,  department_id, Department.name, position, assign_date A
  FROM Assignment INNER JOIN Department ON Assignment.department_id = Department.id
 ORDER BY employee_number, move_date, event_name;
 
+--- MySQL 8 on DO --
+SELECT employee_number,  department_id, Department.name, position, leave_date AS move_date, 'a:離任' AS event_name
+  FROM Leave_event INNER JOIN Department ON Leave_event.department_id = Department.id
+ UNION
+SELECT employee_number,  department_id, Department.name, position, assign_date AS move_date, "b:配属" AS event_name
+ FROM Assignment INNER JOIN Department ON Assignment.department_id = Department.id
+ORDER BY employee_number, move_date, event_name;
+
+
 /*--- current assignement ----*/
 SELECT employee_number,  department_id, position, leave_date AS move_date,
   "a:離任" AS event_name, -1 AS assign_value FROM Leave
@@ -359,6 +368,26 @@ SELECT employee_number, department_id, position, SUM(assign_value) AS assign_sum
  FROM assign_levae
    WHERE move_date < "2020-05-01" AND assign_summary > 0
  GROUP BY employee_number, department_id, position;
+
+-- MySQL 8 on DO --
+
+CREATE VIEW Assign_Levae (employee_number,  department_id, position, move_date, event_name, assign_value)
+AS
+ SELECT employee_number,  department_id, position, leave_date AS move_date,
+   'a:離任' AS event_name, -1 AS assign_value FROM Leave_event
+  UNION
+ SELECT employee_number,  department_id, position, assign_date AS move_date,
+   'b:配属' AS event_name, 1 AS assign_value FROM Assignment;
+  
+SELECT employee_number, department_id, position, SUM(assign_value), count(*)
+ FROM Assign_Levae
+ GROUP BY employee_number, department_id, position;
+
+SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary, count(*)
+ FROM Assign_Levae
+   WHERE move_date < '2022-05-01'
+ GROUP BY employee_number, department_id, position
+  HAVING assign_summary > 0;
 
 /* --- 最新の現在状況 ----*/
 SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary, count(*)
@@ -457,6 +486,52 @@ SELECT asgn.employee_number, emp.name, department_id, dpt.name, position
   INNER JOIN Employee AS emp ON asgn.employee_number = emp.employee_number
   INNER JOIN Department AS dpt ON asgn.department_id = dpt.id;
 
+-- MySQL 8 on DO --
+
+-- OK --
+SELECT * FROM (
+ SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary
+   FROM Assign_Levae
+    WHERE move_date <= '2020-05-01'
+   GROUP BY employee_number, department_id, position
+   HAVING assign_summary > 0
+) AS t;
+
+
+-- NG --
+WITH assign
+AS 
+  SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary
+   FROM Assign_Levae
+    WHERE move_date <= '2020-05-01'
+   GROUP BY employee_number, department_id, position
+   HAVING assign_summary > 0
+SELECT * from assign;
+
+-- OK --
+WITH assign
+AS (
+  SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary
+   FROM Assign_Levae
+    WHERE move_date <= '2020-05-01'
+   GROUP BY employee_number, department_id, position
+   HAVING assign_summary > 0
+)
+SELECT * from assign;
+
+-- OK --
+WITH assign
+AS (
+  SELECT employee_number, department_id, position, SUM(assign_value) AS assign_summary
+   FROM Assign_Levae
+    WHERE move_date <= '2020-05-01'
+   GROUP BY employee_number, department_id, position
+   HAVING assign_summary > 0
+)
+SELECT asgn.employee_number, emp.name, department_id, dpt.name, position
+ FROM assign AS asgn
+  INNER JOIN Employee AS emp ON asgn.employee_number = emp.employee_number
+  INNER JOIN Department AS dpt ON asgn.department_id = dpt.id;
 -- ------------
 
 /* ----
