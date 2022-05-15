@@ -151,3 +151,46 @@ Department ||--o{ Leave:"離任"
 Employee ||--o{ Leave:"離任"
 
 ```
+
+
+## メインフラグを追加
+
+```mermaid
+erDiagram
+Employee {
+  string employee_number
+  string name
+  date birthday
+  date join_date
+  integer main_department_id
+  string main_position
+}
+
+Assignment {
+  integer department_id
+  string employee_number
+  string position
+  date assign_date
+  bool is_main
+}
+
+Leave {
+  integer department_id
+  string employee_number
+  string position
+  date leave_date
+  bool is_main
+}
+
+Department {
+  integer id
+  string name
+}
+
+Department ||--o{ Assignment:"配属"
+Employee ||--o{ Assignment:"配属"
+
+Department ||--o{ Leave:"離任"
+Employee ||--o{ Leave:"離任"
+
+```
