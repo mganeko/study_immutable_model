@@ -29,7 +29,7 @@ CREATE TABLE Employee (
   name VARCHAR(50) NOT NULL,
   birthday DATE,
   join_date DATE NOT NULL,
-  main_department_id INTEGER NOT NULL,
+  main_department_id INTEGER, -- NULLありに変更 
   main_position VARCHAR(16),
   PRIMARY KEY (employee_number),
 

@@ -23,8 +23,8 @@ INSERT INTO Department (id, name) VALUES
 
 INSERT INTO Employee (employee_number, name, birthday, join_date, main_department_id, main_position)
  VALUES
-  ('0001', '山田太郎', '1970-05-10', '1995-10-01', 1, '課長'),
-  ('0021', '鈴木一美', '2000-08-25', '2022-04-01', 2, 'メンバー')
+  ('0001', '山田太郎', '1970-05-10', '1995-10-01', NULL, ''),
+  ('0021', '鈴木一美', '1998-08-25', '2021-04-01', NULL, '')
 ;
 
 
@@ -65,18 +65,37 @@ INSERT INTO Leaves (department_id, employee_number, position, leave_date, is_mai
 ;
 INSERT INTO Assignment (department_id, employee_number, position, assign_date, is_main)
  VALUES (1, '0001', '副課長', '2015-04-01', true);
- 
+
 
 -- 2020-04-01 兼務
 Assign  (2, '0001', 'メンバー', '2020-04-01', false)
 
+INSERT INTO Assignment (department_id, employee_number, position, assign_date, is_main)
+ VALUES (2, '0001', 'メンバー', '2020-04-01', false);
 
 -- 2021-04-01 副課長→課長
 Leave (1, '0001', '副課長', '2021-04-01', true)
 Assign (1, '0001', '課長', '2021-04-01', true)
 
+INSERT INTO Leaves (department_id, employee_number, position, leave_date, is_main)
+ VALUES (1, '0001', '副課長', '2021-04-01', true);
+INSERT INTO Assignment (department_id, employee_number, position, assign_date, is_main)
+ VALUES (1, '0001', '課長', '2021-04-01', true);
+
+
+-- 2021-04-01 入社、
+Assign (2, '0021', 'メンバー', '2021-04-01', true)
+
+INSERT INTO Assignment (department_id, employee_number, position, assign_date, is_main)
+ VALUES (2, '0021', 'メンバー', '2021-04-01', true);
+
+
 -- 2022-04-01 兼務解除、
 Leave  (2, '0001', 'メンバー', '2022-04-01', false)
+
+INSERT INTO Leaves (department_id, employee_number, position, leave_date, is_main)
+ VALUES (2, '0001', 'メンバー', '2022-04-01', false);
+
 
 ----*/
 
