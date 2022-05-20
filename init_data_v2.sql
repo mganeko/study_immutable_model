@@ -49,11 +49,12 @@ INSERT INTO Leaves (department_id, employee_number, position, leave_date, is_mai
 ;
 --- */
 
-/* -- 値のアップデート -- */
-
+/* -- スキーマ変更に伴う値のアップデート -- */
+/*
 -- 差分 --
 UPDATE Assignment SET is_main = false
  WHERE department_id = 2 AND employee_number = '0001';
 
 UPDATE Leaves SET is_main = false
  WHERE department_id = 2 AND employee_number = '0001';
+*/
