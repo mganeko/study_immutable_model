@@ -105,11 +105,11 @@ SELECT * FROM Recent_Employee;
 SELECT * FROM Employee;
 
 
--- 2021-04-01 入社、
--- Assign (2, '0021', 'メンバー', '2021-04-01', true)
+-- 2021-10-01 入社、
+-- Assign (2, '0021', 'メンバー', '2021-10-01', true)
 -- add event --
 INSERT INTO Assignment (department_id, employee_number, position, assign_date, is_main)
- VALUES (2, '0021', 'メンバー', '2021-04-01', true);
+ VALUES (2, '0021', 'メンバー', '2021-10-01', true);
 
 -- update cache usign View --
 UPDATE Employee SET main_department_id = assign.department_id, main_position = assign.position

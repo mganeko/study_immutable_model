@@ -23,7 +23,7 @@ INSERT INTO Department (id, name) VALUES
 INSERT INTO Employee (employee_number, name, birthday, join_date, main_department_id, main_position)
  VALUES
   ('0001', '山田太郎', '1970-05-10', '1995-10-01', NULL, ''),
-  ('0021', '鈴木一美', '1998-08-25', '2021-04-01', NULL, '')
+  ('0021', '鈴木一美', '1998-08-25', '2021-10-01', NULL, '')
 ;
 
 -- 確認 --
